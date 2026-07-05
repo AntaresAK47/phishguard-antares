@@ -1,0 +1,43 @@
+PHISHGUARD ANTARES - REPORTE LOCAL DE ANALISIS
+==============================================================
+Fecha y hora local: 2026-06-24 11:30:39
+Modelo utilizado: Modelo híbrido
+Clase estimada: Phishing probable
+Probabilidad estimada de phishing: 55.14%
+Nivel orientativo de riesgo: Alto
+
+MENSAJE DE RIESGO
+--------------------------------------------------------------
+La probabilidad estimada supera el umbral de decisión del modelo. Se recomienda no abrir enlaces ni ingresar credenciales sin verificación externa.
+
+SENALES TECNICAS URL/ENLACES
+--------------------------------------------------------------
+URL web detectadas: 1
+Enlaces totales detectados: 1
+Enlaces mailto: 0
+Referencias cid: 0
+Otros enlaces: 0
+Longitud máxima de URL: 34
+Subdominios máximos: 2
+Contiene IP: No
+Usa HTTPS: Sí
+Acortador detectado: No
+Palabras sospechosas en URL: 0
+
+COMPARACION DE MODELOS
+--------------------------------------------------------------
+Modelo textual: Legítimo probable | Probabilidad: 36.20% | Riesgo: Moderado
+Modelo URL: Phishing probable | Probabilidad: 70.94% | Riesgo: Muy alto
+Modelo híbrido: Phishing probable | Probabilidad: 55.14% | Riesgo: Alto
+
+ENTRADA ANALIZADA - NEUTRALIZADA
+--------------------------------------------------------------
+Asunto: Cronograma académico semanal
+URL/enlaces: hxxps://www[.]upap.edu.py/cronograma
+Cuerpo:
+Hola, compartimos el cronograma de actividades académicas para esta semana. Puede revisar el documento institucional en la plataforma habitual.
+
+ADVERTENCIA
+--------------------------------------------------------------
+Este reporte fue generado por un prototipo academico local. El resultado es orientativo, no sustituye herramientas profesionales de ciberseguridad y no constituye una decision definitiva de seguridad.
+Las URL fueron tratadas como texto; el prototipo no visito enlaces ni consulto servicios externos.

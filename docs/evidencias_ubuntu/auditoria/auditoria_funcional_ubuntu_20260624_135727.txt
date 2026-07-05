@@ -1,0 +1,41 @@
+
+===== Validar archivos de modelos =====
+OK: {'textual': True, 'url': True, 'hibrido': True}
+
+Modelos cargados: textual=textual, url=url, híbrido=hibrido
+
+===== TXT CP-01 predicción textual sospechosa =====
+OK: (1, 0.7163397553694515)
+
+===== TXT repetibilidad CP-01 =====
+OK: ((1, 0.7163397553694515), (1, 0.7163397553694515))
+
+===== URL CP-04 predicción URL =====
+OK: (1, 0.6573258436038345)
+
+===== URL CP-04 vector 27 variables =====
+OK: (1, 27)
+
+===== URL CP-04 resumen features =====
+OK: {'URL web detectadas': 1, 'Enlaces totales detectados': 1, 'Enlaces mailto': 0, 'Referencias cid': 0, 'Otros enlaces': 0, 'Longitud máxima de URL': 49, 'Subdominios máximos': 1, 'Contiene IP': 'No', 'Usa HTTPS': 'Sí', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 4}
+
+===== URL repetibilidad CP-04 =====
+OK: ((1, 0.6573258436038345), (1, 0.6573258436038345))
+
+===== LNK CP-02 resumen enlaces mixtos =====
+OK: {'URL web detectadas': 1, 'Enlaces totales detectados': 3, 'Enlaces mailto': 1, 'Referencias cid': 1, 'Otros enlaces': 0, 'Longitud máxima de URL': 42, 'Subdominios máximos': 1, 'Contiene IP': 'No', 'Usa HTTPS': 'Sí', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 3}
+
+===== LNK CP-02 vector features =====
+OK: {'url_web_count': 1, 'url_max_len': 42, 'url_mean_len': 42.0, 'url_total_len': 42, 'url_digits_count': 0, 'url_special_count': 1, 'url_hyphen_count': 1, 'url_dot_count': 2, 'url_at_count': 0, 'url_question_count': 0, 'url_equal_count': 0, 'url_ampersand_count': 0, 'url_percent_count': 0, 'url_slash_count': 3, 'url_subdomain_max': 1, 'url_contains_ip': 0, 'url_uses_https': 1, 'url_shortener_present': 0, 'url_suspicious_words_count': 3, 'link_total_detected_count': 3, 'link_mailto_count': 1, 'link_cid_count': 1, 'link_other_count': 0, 'has_web_url': 1, 'has_mailto': 1, 'has_cid': 1, 'has_other_link': 0}
+
+===== HYB CP-01 predicción híbrida =====
+OK: (1, 0.7875991167229573)
+
+===== HYB repetibilidad CP-01 =====
+OK: ((1, 0.7875991167229573), (1, 0.7875991167229573))
+
+===== HYB CP-03 texto sin URL =====
+OK: (0, 0.4081064346068825)
+
+===== Revisión de llamadas externas =====
+Hallazgos peligrosos: NINGUNO

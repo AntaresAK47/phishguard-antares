@@ -1,0 +1,28 @@
+# Entornos virtuales
+.venv/
+.venv_ubuntu/
+venv/
+env/
+
+# Cachés de Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Salidas locales del prototipo (se conserva la estructura con .gitkeep)
+outputs/logs/*
+outputs/reports/*
+!outputs/logs/.gitkeep
+!outputs/reports/.gitkeep
+
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secretos y empaquetados
+.env
+*.7z
+*.zip

@@ -1,0 +1,49 @@
+===== CASOS DE PRUEBA CP EN CHECKLIST =====
+92:### CP-01 — Caso sospechoso completo
+100:### CP-02 — Enlaces web y no web
+106:### CP-03 — Texto sin URL
+113:### CP-04 — URL aislada controlada
+119:### CP-05 — Entrada vacía
+163:| VAL-01 | Textual vacío | Seleccionar textual, usar CP-05 | Muestra error y no predice | Alta | PENDIENTE | |
+164:| VAL-02 | Híbrido vacío | Seleccionar híbrido, usar CP-05 | Muestra error y no predice | Alta | PENDIENTE | |
+165:| VAL-03 | URL vacía | Seleccionar URL, usar CP-05 | Muestra error y no predice | Alta | PENDIENTE | |
+167:| VAL-05 | URL con enlace | Seleccionar URL, usar CP-04 | Permite ejecutar | Crítica | PENDIENTE | |
+169:| VAL-07 | Híbrido completo | Seleccionar híbrido, usar CP-01 | Ejecuta sin advertencia de contexto limitado | Crítica | APROBADO | Validado en Ubuntu con capturas en docs/evidencias_ubuntu/capturas y evidencia de entorno Ubuntu. |
+178:| TXT-02 | Predicción textual sospechosa | Usar texto de CP-01 | Genera clase y probabilidad | Crítica | PENDIENTE | |
+187:| URL-01 | Carga del modelo URL | Seleccionar URL y analizar CP-04 | No hay error de carga | Crítica | PENDIENTE | |
+188:| URL-02 | Predicción URL | Analizar CP-04 | Genera clase y probabilidad | Crítica | PENDIENTE | |
+190:| URL-04 | Detección web | Analizar CP-04 | `URL web detectadas = 1` | Alta | PENDIENTE | |
+191:| URL-05 | Detección HTTPS | Analizar CP-04 | `Usa HTTPS = Sí` | Media | PENDIENTE | |
+192:| URL-06 | Palabras sospechosas | Analizar CP-04 | Conteo mayor que cero | Media | PENDIENTE | |
+193:| URL-07 | Repetibilidad | Repetir CP-04 | Resultado idéntico | Alta | PENDIENTE | |
+199:| LNK-01 | `mailto:` | Analizar CP-02 | `link_mailto_count = 1` y `has_mailto = 1` | Alta | PENDIENTE | |
+200:| LNK-02 | `cid:` | Analizar CP-02 | `link_cid_count = 1` y `has_cid = 1` | Alta | PENDIENTE | |
+201:| LNK-03 | URL web combinada | Analizar CP-02 | `url_web_count = 1` y `has_web_url = 1` | Alta | PENDIENTE | |
+202:| LNK-04 | Total detectado | Analizar CP-02 | Total coherente con los tres elementos | Alta | PENDIENTE | |
+209:| HYB-01 | Carga del modelo híbrido | Analizar CP-01 | No hay error de carga | Crítica | APROBADO | Validado en Ubuntu con capturas en docs/evidencias_ubuntu/capturas y evidencia de entorno Ubuntu. |
+210:| HYB-02 | Predicción híbrida | Analizar CP-01 | Genera clase y probabilidad | Crítica | APROBADO | Validado en Ubuntu con capturas en docs/evidencias_ubuntu/capturas y evidencia de entorno Ubuntu. |
+213:| HYB-05 | Contexto completo | Usar CP-01 | No muestra advertencia de contexto limitado | Media | APROBADO | Validado en Ubuntu con capturas en docs/evidencias_ubuntu/capturas y evidencia de entorno Ubuntu. |
+214:| HYB-06 | Texto sin URL | Usar CP-03 | Predice y muestra nota “Sin enlaces explícitos” | Media | APROBADO | Validado en Ubuntu con capturas en docs/evidencias_ubuntu/capturas y evidencia de entorno Ubuntu. |
+215:| HYB-07 | Repetibilidad | Repetir CP-01 | Resultado idéntico | Alta | PENDIENTE | |
+221:| CMP-01 | Activar comparación | Marcar opción y analizar CP-01 | Ejecuta los tres modelos | Crítica | APROBADO | Validado en Ubuntu con capturas en docs/evidencias_ubuntu/capturas y evidencia de entorno Ubuntu. |
+225:| CMP-05 | Valores de regresión | Ejecutar CP-01 | Textual ≈ 71,63 %, URL ≈ 65,73 %, híbrido ≈ 78,76 % en el entorno dorado | Alta | PENDIENTE | Registrar tolerancia y versión |
+288:| SEC-01 | Sin visita URL | Analizar CP-04 | No se abre ninguna pestaña ni conexión visible | Crítica | PENDIENTE | |
+289:| SEC-02 | Sin APIs externas | Revisar código y tráfico del caso de prueba | Inferencia funciona localmente | Crítica | PENDIENTE | Revisión técnica |
+303:| PLT-03 | Mismo caso en ambos | Ejecutar CP-01 | Misma clase y probabilidad con entorno compatible | Alta | PENDIENTE | Registrar versiones |
+305:| REG-02 | Regresión URL | Ejecutar CP-04 | No cambia respecto a la versión dorada | Alta | PENDIENTE | |
+306:| REG-03 | Regresión híbrida | Ejecutar CP-01 | No cambia respecto a la versión dorada | Alta | PENDIENTE | |
+
+===== FUNCIONES Y PUNTOS TECNICOS DEL CODIGO =====
+app.py:611:        st.download_button(
+app.py:682:        st.download_button(
+src/config.py:46:def validate_model_files() -> dict:
+src/predictor.py:12:    build_feature_frame,
+src/predictor.py:74:    return joblib.load(model_path)
+src/predictor.py:124:    Retorna None si el modelo no soporta predict_proba.
+src/predictor.py:126:    if not hasattr(model, "predict_proba"):
+src/predictor.py:129:    probabilities = model.predict_proba(X)[0]
+src/predictor.py:198:    X = build_feature_frame(urls_raw)
+src/url_features.py:5:from urllib.parse import urlparse
+src/url_features.py:16:# - Este módulo NO hace requests HTTP/HTTPS.
+src/url_features.py:443:def build_feature_frame(urls_raw: str) -> pd.DataFrame:
+src/url_features.py:467:    url_df = build_feature_frame(urls_raw)

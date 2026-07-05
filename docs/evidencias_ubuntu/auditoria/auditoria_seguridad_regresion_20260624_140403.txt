@@ -1,0 +1,12 @@
+===== HASHES MODELOS =====
+7b3eca59da22174ac3ead1fb452dde7545bfb1cc31f1974d8266497a904e294a  models/modelo_hibrido.joblib
+382eeffb77ce5cc240bc1af3ffca41a9932dea6ea7890855345efb89146723c0  models/modelo_textual.joblib
+44230184c22f7b996954071197b3d8f16a5f4a961161fce63f0f95a07be3b421  models/modelo_url.joblib
+
+===== BUSQUEDA DE GUARDADO AUTOMATICO O RED =====
+app.py:149:def set_command_center_open(is_open: bool) -> None:
+
+===== REGRESION CP-01 / CP-04 =====
+Textual CP-01: (1, 0.7163397553694515)
+URL CP-04: (1, 0.6573258436038345)
+Híbrido CP-01: (1, 0.7875991167229573)

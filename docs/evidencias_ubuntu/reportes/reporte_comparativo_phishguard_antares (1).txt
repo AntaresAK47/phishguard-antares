@@ -1,0 +1,43 @@
+PHISHGUARD ANTARES - REPORTE LOCAL DE ANALISIS
+==============================================================
+Fecha y hora local: 2026-06-24 11:33:53
+Modelo utilizado: Modelo híbrido
+Clase estimada: Legítimo probable
+Probabilidad estimada de phishing: 9.91%
+Nivel orientativo de riesgo: Bajo
+
+MENSAJE DE RIESGO
+--------------------------------------------------------------
+El mensaje presenta baja probabilidad estimada de phishing. Se recomienda mantener hábitos normales de verificación.
+
+SENALES TECNICAS URL/ENLACES
+--------------------------------------------------------------
+URL web detectadas: 2
+Enlaces totales detectados: 6
+Enlaces mailto: 2
+Referencias cid: 2
+Otros enlaces: 0
+Longitud máxima de URL: 42
+Subdominios máximos: 1
+Contiene IP: No
+Usa HTTPS: Sí
+Acortador detectado: No
+Palabras sospechosas en URL: 6
+
+COMPARACION DE MODELOS
+--------------------------------------------------------------
+Modelo textual: Phishing probable | Probabilidad: 53.22% | Riesgo: Alto
+Modelo URL: Legítimo probable | Probabilidad: 1.44% | Riesgo: Muy bajo
+Modelo híbrido: Legítimo probable | Probabilidad: 9.91% | Riesgo: Bajo
+
+ENTRADA ANALIZADA - NEUTRALIZADA
+--------------------------------------------------------------
+Asunto: Suspensión de cuenta
+URL/enlaces: mailto:soporte@banco.com, cid:image001.jpg, hxxps://login-banco.example.com/actualizar
+Cuerpo:
+Estimado usuario, su cuenta será suspendida. Verifique sus datos ingresando al siguiente enlace:mailto:soporte@banco.com, cid:image001.jpg, hxxps://login-banco.example.com/actualizar
+
+ADVERTENCIA
+--------------------------------------------------------------
+Este reporte fue generado por un prototipo academico local. El resultado es orientativo, no sustituye herramientas profesionales de ciberseguridad y no constituye una decision definitiva de seguridad.
+Las URL fueron tratadas como texto; el prototipo no visito enlaces ni consulto servicios externos.

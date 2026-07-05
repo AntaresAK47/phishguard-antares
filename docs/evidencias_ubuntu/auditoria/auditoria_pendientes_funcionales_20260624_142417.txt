@@ -1,0 +1,33 @@
+
+===== VAL-01 textual vacío =====
+EXCEPCION CONTROLADA: ValueError: El modelo textual requiere contenido de texto.
+
+===== VAL-02 híbrido vacío =====
+EXCEPCION CONTROLADA: ValueError: El modelo híbrido requiere contenido de texto.
+
+===== VAL-03 URL vacía =====
+EXCEPCION CONTROLADA: ValueError: El modelo URL requiere al menos una URL o enlace.
+
+===== VAL-08 espacios exteriores =====
+OK
+{'modelo': 'Modelo híbrido', 'clase_predicha': 'Phishing probable', 'probabilidad_phishing': '78.76%', 'nivel_riesgo': 'Muy alto', 'mensaje_riesgo': 'El mensaje presenta una probabilidad elevada de contener patrones compatibles con phishing. Evite abrir enlaces, descargar archivos o ingresar información sensible.', 'feature_summary': {'URL web detectadas': 1, 'Enlaces totales detectados': 1, 'Enlaces mailto': 0, 'Referencias cid': 0, 'Otros enlaces': 0, 'Longitud máxima de URL': 49, 'Subdominios máximos': 1, 'Contiene IP': 'No', 'Usa HTTPS': 'Sí', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 4}}
+
+===== VAL-09 texto con enlace embebido =====
+OK
+({'modelo': 'Modelo híbrido', 'clase_predicha': 'Phishing probable', 'probabilidad_phishing': '55.14%', 'nivel_riesgo': 'Alto', 'mensaje_riesgo': 'La probabilidad estimada supera el umbral de decisión del modelo. Se recomienda no abrir enlaces ni ingresar credenciales sin verificación externa.', 'feature_summary': {'URL web detectadas': 1, 'Enlaces totales detectados': 1, 'Enlaces mailto': 0, 'Referencias cid': 0, 'Otros enlaces': 0, 'Longitud máxima de URL': 49, 'Subdominios máximos': 1, 'Contiene IP': 'No', 'Usa HTTPS': 'Sí', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 4}}, {'URL web detectadas': 1, 'Enlaces totales detectados': 1, 'Enlaces mailto': 0, 'Referencias cid': 0, 'Otros enlaces': 0, 'Longitud máxima de URL': 49, 'Subdominios máximos': 1, 'Contiene IP': 'No', 'Usa HTTPS': 'Sí', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 4})
+
+===== TXT-03 entrada textual combinada =====
+OK
+Verificación urgente
+Debe actualizar su cuenta para evitar suspensión del servicio.
+
+===== TXT-04 textual sin señales URL =====
+OK
+{'URL web detectadas': 0, 'Enlaces totales detectados': 0, 'Enlaces mailto': 0, 'Referencias cid': 0, 'Otros enlaces': 0, 'Longitud máxima de URL': 0, 'Subdominios máximos': 0, 'Contiene IP': 'No', 'Usa HTTPS': 'No', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 0}
+
+===== CMP-06 error parcial controlado =====
+EXCEPCION CONTROLADA: ValueError: El modelo URL requiere al menos una URL o enlace.
+
+===== REP-06 sin guardado automático =====
+OK
+{'reportes_antes': ['reporte_comparativo_phishguard_antares (1).txt', 'reporte_comparativo_phishguard_antares.txt', 'reporte_phishguard_antares.txt'], 'analisis': {'modelo': 'Modelo híbrido', 'clase_predicha': 'Phishing probable', 'probabilidad_phishing': '78.76%', 'nivel_riesgo': 'Muy alto', 'mensaje_riesgo': 'El mensaje presenta una probabilidad elevada de contener patrones compatibles con phishing. Evite abrir enlaces, descargar archivos o ingresar información sensible.', 'feature_summary': {'URL web detectadas': 1, 'Enlaces totales detectados': 1, 'Enlaces mailto': 0, 'Referencias cid': 0, 'Otros enlaces': 0, 'Longitud máxima de URL': 49, 'Subdominios máximos': 1, 'Contiene IP': 'No', 'Usa HTTPS': 'Sí', 'Acortador detectado': 'No', 'Palabras sospechosas en URL': 4}}, 'reportes_despues': ['reporte_comparativo_phishguard_antares (1).txt', 'reporte_comparativo_phishguard_antares.txt', 'reporte_phishguard_antares.txt']}

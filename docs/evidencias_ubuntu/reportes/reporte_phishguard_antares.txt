@@ -1,0 +1,37 @@
+PHISHGUARD ANTARES - REPORTE LOCAL DE ANALISIS
+==============================================================
+Fecha y hora local: 2026-06-24 13:48:48
+Modelo utilizado: Modelo híbrido
+Clase estimada: Phishing probable
+Probabilidad estimada de phishing: 70.05%
+Nivel orientativo de riesgo: Muy alto
+
+MENSAJE DE RIESGO
+--------------------------------------------------------------
+El mensaje presenta una probabilidad elevada de contener patrones compatibles con phishing. Evite abrir enlaces, descargar archivos o ingresar información sensible.
+
+SENALES TECNICAS URL/ENLACES
+--------------------------------------------------------------
+URL web detectadas: 1
+Enlaces totales detectados: 1
+Enlaces mailto: 0
+Referencias cid: 0
+Otros enlaces: 0
+Longitud máxima de URL: 43
+Subdominios máximos: 0
+Contiene IP: No
+Usa HTTPS: No
+Acortador detectado: No
+Palabras sospechosas en URL: 3
+
+ENTRADA ANALIZADA - NEUTRALIZADA
+--------------------------------------------------------------
+Asunto: Suspensión de cuenta
+URL/enlaces: hxxp://seguridad-banco-validacion.com/login
+Cuerpo:
+Estimado usuario, su cuenta será suspendida. Verifique sus datos ingresando al siguiente enlace.
+
+ADVERTENCIA
+--------------------------------------------------------------
+Este reporte fue generado por un prototipo academico local. El resultado es orientativo, no sustituye herramientas profesionales de ciberseguridad y no constituye una decision definitiva de seguridad.
+Las URL fueron tratadas como texto; el prototipo no visito enlaces ni consulto servicios externos.

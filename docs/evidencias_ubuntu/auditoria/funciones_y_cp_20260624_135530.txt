@@ -1,0 +1,68 @@
+===== CASOS CP COMPLETOS =====
+---
+
+## 4. Datos controlados de prueba
+
+### CP-01 — Caso sospechoso completo
+
+```text
+Asunto: Verificación urgente
+Cuerpo: Debe actualizar su cuenta para evitar suspensión del servicio.
+URL: https://secure-login.example.com/verify?token=123
+```
+
+### CP-02 — Enlaces web y no web
+
+```text
+URL/enlaces: mailto:soporte@banco.com, cid:image001.jpg, https://login-banco.example.com/actualizar
+```
+
+### CP-03 — Texto sin URL
+
+```text
+Asunto: Reunión de coordinación
+Cuerpo: Se confirma la reunión del equipo para mañana a las 10:00. No se requiere entregar credenciales ni acceder a enlaces.
+```
+
+### CP-04 — URL aislada controlada
+
+```text
+https://secure-login.example.com/verify?token=123
+```
+
+### CP-05 — Entrada vacía
+
+```text
+Asunto: [vacío]
+Cuerpo: [vacío]
+URL: [vacío]
+```
+
+===== FUNCIONES PREDICTOR =====
+37:def normalize_model_name(model_name: str) -> str:
+61:def load_model(model_name: str):
+77:def load_all_models() -> dict:
+87:def build_text_input(subject: str = "", body: str = "") -> str:
+97:def build_url_input(subject: str = "", body: str = "", urls_raw: str = "") -> str:
+119:def positive_probability(model: Any, X) -> float | None:
+142:def build_result(
+173:def predict_textual(model, text: str) -> tuple[int, float | None]:
+189:def predict_url(model, urls_raw: str) -> tuple[int, float | None, pd.DataFrame]:
+205:def predict_hybrid(model, text: str, urls_raw: str) -> tuple[int, float | None, pd.DataFrame]:
+221:def analyze(
+284:def compact_result(result: dict) -> dict:
+
+===== FUNCIONES URL_FEATURES =====
+104:def safe_text(value) -> str:
+124:def merge_url_inputs(*values) -> str:
+140:def normalize_url_for_parsing(url: str) -> str:
+169:def split_raw_links(value):
+224:def classify_links(raw_links):
+271:def is_ip_address(host: str) -> int:
+287:def count_subdomains(host: str) -> int:
+311:def contains_shortener(host: str) -> int:
+319:def web_features(web_urls):
+421:def extract_all_features(value):
+443:def build_feature_frame(urls_raw: str) -> pd.DataFrame:
+462:def build_hybrid_frame(text: str, urls_raw: str) -> pd.DataFrame:
+474:def summarize_features(urls_raw: str) -> dict:
