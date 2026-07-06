@@ -3,7 +3,7 @@
 **Sistema:** PhishGuard Antares — Versión 2.0
 **Tipo:** Prototipo académico local de detección de phishing
 **Tesis asociada:** "Modelo híbrido de aprendizaje automático para la detección de phishing en español latinoamericano mediante análisis integrado de contenido textual y características léxicas de URL en entornos institucionales."
-**Fecha de auditoría:** 03/07/2026
+**Fecha de auditoría:** 05/07/2026
 **Dictamen general:** APTO CON OBSERVACIONES MENORES (todas corregidas y documentadas)
 
 ## 1. Qué es PhishGuard Antares
