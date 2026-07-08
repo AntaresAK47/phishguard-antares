@@ -9,33 +9,20 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 MODELS_DIR = PROJECT_ROOT / "models"
-BASELINE_MODELS_DIR = MODELS_DIR / "baseline_spaphish_v1"
-PRODUCTION_MODELS_DIR = MODELS_DIR / "production_multisource_v1"
-
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = OUTPUTS_DIR / "reports"
 LOGS_DIR = OUTPUTS_DIR / "logs"
 
-ACTIVE_MODEL_FAMILY = "production_multisource_v1"
-
-BASELINE_MODEL_PATHS = {
-    "textual": BASELINE_MODELS_DIR / "modelo_textual.joblib",
-    "url": BASELINE_MODELS_DIR / "modelo_url.joblib",
-    "hibrido": BASELINE_MODELS_DIR / "modelo_hibrido.joblib",
+MODEL_PATHS = {
+    "textual": MODELS_DIR / "modelo_textual.joblib",
+    "url": MODELS_DIR / "modelo_url.joblib",
+    "hibrido": MODELS_DIR / "modelo_hibrido.joblib",
 }
-
-PRODUCTION_MODEL_PATHS = {
-    "textual": PRODUCTION_MODELS_DIR / "modelo_textual_global.joblib",
-    "url": PRODUCTION_MODELS_DIR / "modelo_url_global.joblib",
-    "hibrido": PRODUCTION_MODELS_DIR / "modelo_fusion_hibrido_global.joblib",
-}
-
-MODEL_PATHS = PRODUCTION_MODEL_PATHS
 
 MODEL_DISPLAY_NAMES = {
-    "textual": "Modelo textual global",
-    "url": "Modelo URL global",
-    "hibrido": "Modelo híbrido global",
+    "textual": "Modelo textual",
+    "url": "Modelo URL",
+    "hibrido": "Modelo híbrido",
 }
 
 POSITIVE_LABEL = 1
@@ -53,12 +40,13 @@ RISK_THRESHOLDS = {
 
 APP_NAME = "PhishGuard Antares"
 APP_SUBTITLE = "Prototipo académico de detección de phishing"
-APP_VERSION = "3.0-multidataset"
+APP_VERSION = "2.0"
 
 
 def validate_model_files() -> dict:
     """
-    Verifica si los archivos de modelos existen en la carpeta activa.
+    Verifica si los archivos de modelos existen en la carpeta models.
+    Retorna un diccionario con True/False por cada modelo.
     """
     return {
         model_name: model_path.exists()

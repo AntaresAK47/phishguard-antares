@@ -1,0 +1,78 @@
+{
+  "seed": 42,
+  "files": {
+    "text_train": "/home/sansi_gnomo_magico/Escritorio/Tesis N°1 - Antares/tesis-phishing-dataset/multisource_v3/04_splits/production_multisource_v1/textual_train_42_3521.csv",
+    "text_test": "/home/sansi_gnomo_magico/Escritorio/Tesis N°1 - Antares/tesis-phishing-dataset/multisource_v3/04_splits/production_multisource_v1/textual_test_42_880.csv",
+    "url_train": "/home/sansi_gnomo_magico/Escritorio/Tesis N°1 - Antares/tesis-phishing-dataset/multisource_v3/04_splits/production_multisource_v1/url_train_42_103428.csv",
+    "url_test": "/home/sansi_gnomo_magico/Escritorio/Tesis N°1 - Antares/tesis-phishing-dataset/multisource_v3/04_splits/production_multisource_v1/url_test_42_25856.csv"
+  },
+  "textual_global": {
+    "accuracy": 0.8,
+    "precision": 0.8972602739726028,
+    "recall": 0.75,
+    "f1": 0.817047817047817,
+    "roc_auc": 0.9055557938073591,
+    "tn": 311,
+    "fp": 45,
+    "fn": 131,
+    "tp": 393
+  },
+  "url_global": {
+    "accuracy": 0.9922261757425742,
+    "precision": 0.9992155016866714,
+    "recall": 0.9852258663366337,
+    "f1": 0.9921713729308665,
+    "roc_auc": 0.9976558036493818,
+    "tn": 12918,
+    "fp": 10,
+    "fn": 191,
+    "tp": 12737
+  },
+  "fusion_hibrido_global": {
+    "accuracy": 0.8306818181818182,
+    "precision": 0.8898128898128899,
+    "recall": 0.816793893129771,
+    "f1": 0.8517412935323383,
+    "roc_auc": 0.9124120850844841,
+    "tn": 303,
+    "fp": 53,
+    "fn": 96,
+    "tp": 428
+  },
+  "dataset_counts": {
+    "text_train": 3521,
+    "text_test": 880,
+    "url_train": 103428,
+    "url_test": 25856
+  },
+  "feature_sets": {
+    "url_features": [
+      "url_len",
+      "hostname_len",
+      "path_len",
+      "query_len",
+      "digits_count",
+      "special_count",
+      "dot_count",
+      "hyphen_count",
+      "at_count",
+      "question_count",
+      "equal_count",
+      "ampersand_count",
+      "percent_count",
+      "slash_count",
+      "subdomain_count",
+      "contains_ip",
+      "uses_https",
+      "suspicious_words_count",
+      "shortener_present",
+      "entropy"
+    ],
+    "fusion_features": [
+      "text_prob",
+      "url_prob",
+      "has_url",
+      "url_count"
+    ]
+  }
+}

@@ -1,6 +1,10 @@
 from functools import lru_cache
+import html
+import math
 import re
+from collections import Counter
 from typing import Any
+from urllib.parse import urlparse
 
 import joblib
 import pandas as pd
@@ -15,28 +19,35 @@ from src.url_features import (
 )
 
 
-# ============================================================
-# predictor.py
-# Carga de modelos y predicción para PhishGuard Antares.
-#
-# Seguridad:
-# - No visita enlaces.
-# - No consulta APIs externas.
-# - No modifica los modelos.
-# - Solo usa los modelos .joblib entrenados localmente.
-# ============================================================
-
-
 LINK_SIGNAL_PATTERN = re.compile(
     r"(hxxps?://|https?://|www\.|mailto:|cid:|\[\.\]|\b[a-zA-Z0-9-]+\.[a-zA-Z]{2,}\b)",
     re.IGNORECASE,
 )
 
+GLOBAL_URL_FEATURES = [
+    "url_len", "hostname_len", "path_len", "query_len",
+    "digits_count", "special_count", "dot_count", "hyphen_count",
+    "at_count", "question_count", "equal_count", "ampersand_count",
+    "percent_count", "slash_count", "subdomain_count",
+    "contains_ip", "uses_https", "suspicious_words_count",
+    "shortener_present", "entropy",
+]
+
+SUSPICIOUS_WORDS = [
+    "login", "verify", "verification", "account", "secure", "update", "password",
+    "bank", "wallet", "confirm", "urgent", "support", "signin", "session",
+    "validate", "token", "bonus", "reward", "free", "invoice", "payment",
+    "verificar", "cuenta", "seguridad", "urgente", "contraseña", "banco",
+    "actualizar", "confirmar", "validar", "premio", "pago",
+]
+
+SHORTENERS = [
+    "bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd",
+    "buff.ly", "cutt.ly", "rebrand.ly", "shorturl.at",
+]
+
 
 def normalize_model_name(model_name: str) -> str:
-    """
-    Normaliza y valida el nombre interno del modelo.
-    """
     model_name = safe_text(model_name).lower()
 
     aliases = {
@@ -58,12 +69,6 @@ def normalize_model_name(model_name: str) -> str:
 
 @lru_cache(maxsize=3)
 def load_model(model_name: str):
-    """
-    Carga un modelo .joblib desde la carpeta models.
-
-    Se usa caché para evitar cargar el mismo modelo varias veces
-    durante una sesión de uso del prototipo.
-    """
     model_name = normalize_model_name(model_name)
     model_path = MODEL_PATHS[model_name]
 
@@ -74,34 +79,35 @@ def load_model(model_name: str):
 
 
 def load_all_models() -> dict:
-    """
-    Carga los tres modelos entrenados.
-    """
     return {
         model_name: load_model(model_name)
         for model_name in MODEL_PATHS.keys()
     }
 
 
+def unwrap_model(model: Any) -> tuple[Any, list[str] | None]:
+    if isinstance(model, dict) and "model" in model:
+        return model["model"], model.get("feature_names")
+    return model, None
+
+
+def is_global_url_model(model: Any) -> bool:
+    _, feature_names = unwrap_model(model)
+    return bool(feature_names and "url_len" in feature_names)
+
+
+def is_global_fusion_model(model: Any) -> bool:
+    _, feature_names = unwrap_model(model)
+    return bool(feature_names and "text_prob" in feature_names)
+
+
 def build_text_input(subject: str = "", body: str = "") -> str:
-    """
-    Construye el texto que será enviado al modelo textual o híbrido.
-    """
     subject = safe_text(subject)
     body = safe_text(body)
-
     return f"{subject}\n{body}".strip()
 
 
 def build_url_input(subject: str = "", body: str = "", urls_raw: str = "") -> str:
-    """
-    Construye la entrada de enlaces para el extractor URL.
-
-    Regla importante:
-    - Siempre usa el campo urls_raw si el usuario lo proporciona.
-    - Solo añade asunto/cuerpo si contienen señales reales de enlace.
-      Esto evita que texto normal sea contado como enlaces no web.
-    """
     parts = []
 
     urls_raw = safe_text(urls_raw)
@@ -115,18 +121,112 @@ def build_url_input(subject: str = "", body: str = "", urls_raw: str = "") -> st
     return "\n".join(parts).strip()
 
 
-def positive_probability(model: Any, X) -> float | None:
-    """
-    Obtiene la probabilidad asociada a la clase positiva:
-    1 = phishing.
+def deneutralize_url(value: str) -> str:
+    value = safe_text(value)
+    value = html.unescape(value)
+    value = value.replace("hxxps://", "https://").replace("hxxp://", "http://")
+    value = value.replace("[.]", ".")
+    value = value.replace("\\/", "/")
+    return value.strip().strip("[]'\"<> .,;")
 
-    Retorna None si el modelo no soporta predict_proba.
-    """
-    if not hasattr(model, "predict_proba"):
+
+def entropy(value: str) -> float:
+    if not value:
+        return 0.0
+    counts = Counter(value)
+    total = len(value)
+    return -sum((count / total) * math.log2(count / total) for count in counts.values())
+
+
+def extract_candidate_urls(value: str) -> list[str]:
+    text = deneutralize_url(value)
+
+    pattern = re.compile(
+        r"(?:https?://[^\s,\]\)\"'<>]+|www\.[^\s,\]\)\"'<>]+|\b[a-zA-Z0-9][a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s,\]\)\"'<>]*)?)",
+        re.IGNORECASE,
+    )
+
+    candidates = []
+    for match in pattern.findall(text):
+        candidate = deneutralize_url(match)
+        if candidate and "." in candidate:
+            candidates.append(candidate)
+
+    if not candidates and text and "." in text and LINK_SIGNAL_PATTERN.search(text):
+        candidates.append(text)
+
+    unique = []
+    seen = set()
+    for candidate in candidates:
+        key = candidate.lower()
+        if key not in seen:
+            unique.append(candidate)
+            seen.add(key)
+
+    return unique
+
+
+def url_features_one(url: str) -> dict:
+    raw = deneutralize_url(url)
+    parsed_input = raw if re.match(r"^[a-zA-Z]+://", raw) else "http://" + raw
+
+    try:
+        parsed = urlparse(parsed_input)
+        host = (parsed.hostname or parsed.netloc or "").lower()
+        path = parsed.path or ""
+        query = parsed.query or ""
+    except Exception:
+        host = ""
+        path = raw
+        query = ""
+
+    full = raw.lower()
+    ip_pattern = r"(\d{1,3}\.){3}\d{1,3}"
+    subdomain_count = max(0, len(host.split(".")) - 2) if host else 0
+
+    return {
+        "url_len": len(raw),
+        "hostname_len": len(host),
+        "path_len": len(path),
+        "query_len": len(query),
+        "digits_count": sum(ch.isdigit() for ch in raw),
+        "special_count": sum(not ch.isalnum() for ch in raw),
+        "dot_count": raw.count("."),
+        "hyphen_count": raw.count("-"),
+        "at_count": raw.count("@"),
+        "question_count": raw.count("?"),
+        "equal_count": raw.count("="),
+        "ampersand_count": raw.count("&"),
+        "percent_count": raw.count("%"),
+        "slash_count": raw.count("/"),
+        "subdomain_count": subdomain_count,
+        "contains_ip": int(bool(re.search(ip_pattern, host))),
+        "uses_https": int(raw.startswith("https://")),
+        "suspicious_words_count": sum(word in full for word in SUSPICIOUS_WORDS),
+        "shortener_present": int(any(shortener in host for shortener in SHORTENERS)),
+        "entropy": entropy(raw),
+    }
+
+
+def build_global_url_feature_frame(urls_raw: str, feature_names: list[str] | None = None) -> pd.DataFrame:
+    feature_names = feature_names or GLOBAL_URL_FEATURES
+    urls = extract_candidate_urls(urls_raw)
+    rows = [url_features_one(url) for url in urls]
+
+    if not rows:
+        return pd.DataFrame(columns=feature_names)
+
+    return pd.DataFrame(rows).reindex(columns=feature_names, fill_value=0).fillna(0)
+
+
+def positive_probabilities(model: Any, X) -> list[float] | None:
+    core_model, _ = unwrap_model(model)
+
+    if not hasattr(core_model, "predict_proba"):
         return None
 
-    probabilities = model.predict_proba(X)[0]
-    classes = list(model.classes_)
+    probabilities = core_model.predict_proba(X)
+    classes = list(core_model.classes_)
 
     if POSITIVE_LABEL not in classes:
         raise ValueError(
@@ -135,7 +235,14 @@ def positive_probability(model: Any, X) -> float | None:
         )
 
     positive_index = classes.index(POSITIVE_LABEL)
-    return float(probabilities[positive_index])
+    return [float(row[positive_index]) for row in probabilities]
+
+
+def positive_probability(model: Any, X) -> float | None:
+    probabilities = positive_probabilities(model, X)
+    if not probabilities:
+        return None
+    return probabilities[0]
 
 
 def build_result(
@@ -146,12 +253,9 @@ def build_result(
     text_used: str = "",
     urls_used: str = "",
 ) -> dict:
-    """
-    Construye un resultado estándar para la interfaz.
-    """
     model_name = normalize_model_name(model_name)
 
-    result = {
+    return {
         "modelo": model_name,
         "modelo_nombre": MODEL_DISPLAY_NAMES.get(model_name, model_name),
         "label_predicho": int(prediction),
@@ -166,53 +270,105 @@ def build_result(
         "feature_summary": summarize_features(urls_used) if urls_used else {},
     }
 
-    return result
 
-
-def predict_textual(model, text: str) -> tuple[int, float | None]:
-    """
-    Predicción usando únicamente contenido textual.
-    """
+def predict_textual(model: Any, text: str) -> tuple[int, float | None]:
     text = safe_text(text)
 
     if not text:
         raise ValueError("El modelo textual requiere contenido de texto.")
 
+    core_model, _ = unwrap_model(model)
     X = pd.Series([text])
-    prediction = int(model.predict(X)[0])
-    probability = positive_probability(model, X)
+    prediction = int(core_model.predict(X)[0])
+    probability = positive_probability(core_model, X)
 
     return prediction, probability
 
 
-def predict_url(model, urls_raw: str) -> tuple[int, float | None, pd.DataFrame]:
-    """
-    Predicción usando únicamente características URL/enlaces.
-    """
+def predict_url(model: Any, urls_raw: str) -> tuple[int, float | None, pd.DataFrame]:
     urls_raw = safe_text(urls_raw)
 
     if not urls_raw:
         raise ValueError("El modelo URL requiere al menos una URL o enlace.")
 
+    core_model, feature_names = unwrap_model(model)
+
+    if is_global_url_model(model):
+        X = build_global_url_feature_frame(urls_raw, feature_names)
+        if X.empty:
+            raise ValueError("El modelo URL requiere al menos una URL o enlace válido.")
+
+        probabilities = positive_probabilities(core_model, X)
+        if not probabilities:
+            prediction = int(core_model.predict(X)[0])
+            return prediction, None, X.iloc[[0]].copy()
+
+        best_index = max(range(len(probabilities)), key=lambda idx: probabilities[idx])
+        probability = probabilities[best_index]
+        prediction = int(probability >= 0.5)
+
+        return prediction, probability, X.iloc[[best_index]].copy()
+
     X = build_feature_frame(urls_raw)
-    prediction = int(model.predict(X)[0])
-    probability = positive_probability(model, X)
+    prediction = int(core_model.predict(X)[0])
+    probability = positive_probability(core_model, X)
 
     return prediction, probability, X
 
 
-def predict_hybrid(model, text: str, urls_raw: str) -> tuple[int, float | None, pd.DataFrame]:
-    """
-    Predicción usando texto + características URL/enlaces.
-    """
+def url_probability_from_field(urls_raw: str, url_model: Any) -> tuple[float, int]:
+    urls = extract_candidate_urls(urls_raw)
+    if not urls:
+        return 0.5, 0
+
+    core_model, feature_names = unwrap_model(url_model)
+
+    if is_global_url_model(url_model):
+        X = build_global_url_feature_frame("\n".join(urls), feature_names)
+    else:
+        X = build_feature_frame("\n".join(urls))
+
+    probabilities = positive_probabilities(core_model, X)
+    if not probabilities:
+        return 0.5, len(urls)
+
+    return max(probabilities), len(urls)
+
+
+def predict_hybrid(model: Any, text: str, urls_raw: str) -> tuple[int, float | None, pd.DataFrame]:
     text = safe_text(text)
+    urls_raw = safe_text(urls_raw)
 
     if not text:
         raise ValueError("El modelo híbrido requiere contenido de texto.")
 
+    core_model, feature_names = unwrap_model(model)
+
+    if is_global_fusion_model(model):
+        text_model = load_model("textual")
+        url_model = load_model("url")
+
+        _, text_probability = predict_textual(text_model, text)
+        url_probability, url_count = url_probability_from_field(urls_raw, url_model)
+
+        X = pd.DataFrame([{
+            "text_prob": 0.5 if text_probability is None else text_probability,
+            "url_prob": url_probability,
+            "has_url": int(url_count > 0),
+            "url_count": int(url_count),
+        }]).reindex(columns=feature_names, fill_value=0).fillna(0)
+
+        probability = positive_probability(core_model, X)
+        if probability is None:
+            prediction = int(core_model.predict(X)[0])
+        else:
+            prediction = int(probability >= 0.5)
+
+        return prediction, probability, X
+
     X = build_hybrid_frame(text, urls_raw)
-    prediction = int(model.predict(X)[0])
-    probability = positive_probability(model, X)
+    prediction = int(core_model.predict(X)[0])
+    probability = positive_probability(core_model, X)
 
     return prediction, probability, X
 
@@ -223,18 +379,6 @@ def analyze(
     body: str = "",
     urls_raw: str = "",
 ) -> dict:
-    """
-    Función principal de análisis para la aplicación.
-
-    Parámetros:
-    - model_name: textual, url o hibrido.
-    - subject: asunto del mensaje.
-    - body: cuerpo del mensaje.
-    - urls_raw: URL/enlaces pegados por el usuario.
-
-    Retorna:
-    - Diccionario con clase predicha, probabilidad, riesgo y señales.
-    """
     model_name = normalize_model_name(model_name)
     text = build_text_input(subject, body)
     urls_input = build_url_input(subject, body, urls_raw)
@@ -281,9 +425,6 @@ def analyze(
 
 
 def compact_result(result: dict) -> dict:
-    """
-    Versión resumida del resultado para imprimir en pruebas de terminal.
-    """
     return {
         "modelo": result.get("modelo_nombre"),
         "clase_predicha": result.get("clase_predicha"),
